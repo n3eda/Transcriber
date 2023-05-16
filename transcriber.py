@@ -20,7 +20,9 @@ def process():
     translator = translator_var.get()
 
     #Ausgabefeld leeren
+    output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
     output_text.delete("1.0", tk.END)
+    output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
     #Download der Datei
     download_file(url)
@@ -37,7 +39,7 @@ def process():
 
         # Ausgabe der Transkription
         for segment in result["segments"]:
-            line = "[%s --> %s]%s" % (segment["start"],segment["end"], segment["text"])
+            line = "[%s --> %s]%s" % (round(segment["start"],2),round(segment["end"],2), segment["text"])
 
             output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
             output_text.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
