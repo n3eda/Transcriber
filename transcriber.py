@@ -80,7 +80,7 @@ window.geometry("400x600")
 # Erstelle Eingabefeld für URL
 url_label = tk.Label(window, text="URL:")
 url_label.pack()
-url_entry = tk.Entry(window,width=25)
+url_entry = tk.Entry(window,width=40)
 url_entry.pack()
 
 
