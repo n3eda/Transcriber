@@ -18,26 +18,22 @@ def process():
     api_key = api_key_entry.get()
     size = size_var.get()
     translator = translator_var.get()
-    print(translator)
 
     #Ausgabefeld leeren
-    output_text.delete("1.0", tk.END)  # Lösche den aktuellen Inhalt des Textfelds
+    output_text.delete("1.0", tk.END)
 
     #Download der Datei
     download_file(url)
 
 
     if translator == "whisper":
-        print("Schleife whisper")
         if url == "":
             messagebox.showerror("Error", "Please enter a valid URL")
             return
 
         # Erstellen des Transkribers
         model = whisper.load_model(size)
-        print("starte")
         result = model.transcribe('file.mp4',task='translate')
-        print("beende whisper")
 
         # Ausgabe der Transkription
         for segment in result["segments"]:
@@ -80,11 +76,11 @@ window.geometry("400x600")
 # Erstelle Eingabefeld für URL
 url_label = tk.Label(window, text="URL:")
 url_label.pack()
-url_entry = tk.Entry(window)
+url_entry = tk.Entry(window,width=25)
 url_entry.pack()
 
 
-# Erstelle Radiobuttons für Auswahl Übersetzer
+# Erstelle Radiobuttons für Auswahl des Übersetzers
 translator = tk.Label(window, text="Übersetzer wählen:")
 translator.pack()
 
@@ -100,7 +96,7 @@ pick_whisper.pack()
 # Erstelle Eingabefeld für API-Key
 api_key_label = tk.Label(window, text="API Key:")
 api_key_label.pack()
-api_key_entry = tk.Entry(window)
+api_key_entry = tk.Entry(window,width=25)
 api_key_entry.pack()
 
 # Erstelle Radiobuttons für Größenauswahl
@@ -122,14 +118,14 @@ size_small.pack()
 size_medium = tk.Radiobutton(window, text="medium (5GB VRAM)", variable=size_var, value="medium")
 size_medium.pack()
 
-# Erstelle Button zum Verarbeiten der Daten
-process_button = tk.Button(window, text="Process", command=process)
-process_button.pack()
-
 # Erstelle Textfeld für die Ausgabe
 output_text = tk.Text(window, height=20)
 output_text.pack()
 output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+
+# Erstelle Button zum Verarbeiten der Daten
+process_button = tk.Button(window, text="Process", command=process)
+process_button.pack()
 
 # Erstelle Button zum Beenden
 quit_button = tk.Button(window, text="Exit", command=window.destroy)
