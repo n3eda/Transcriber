@@ -1,0 +1,4 @@
+deepl==1.14.0
+openai_whisper==20230124
+Requests==2.30.0
+whisper==1.1.10
