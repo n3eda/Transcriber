@@ -55,6 +55,8 @@ def process():
         model = whisper.load_model(size)
         result = model.transcribe('file.mp4')
 
+        translator = deepl.Translator(api_key)
+
         # Ausgabe der Transkription
         for segment in result["segments"]:
             translated = translator.translate_text(segment["text"], target_lang="DE")
