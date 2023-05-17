@@ -7,7 +7,7 @@ Benötigt wird:
 - Git
 
 Installieren:
-- aktuelles Python installieren (mind. 3.10)
+- aktuelles Python installieren (mind. 3.9)
 - git-repo klonen
 - Konsole öffnen
 - ins geklonte Verzeichnis wechseln
