@@ -75,7 +75,7 @@ def process():
 # Erstelle das Hauptfenster
 window = tk.Tk()
 window.title("Pr0-Videoübersetzer")
-window.geometry("400x600")
+window.geometry("400x700")
 
 # Erstelle Eingabefeld für URL
 url_label = tk.Label(window, text="URL:")
