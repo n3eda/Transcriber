@@ -91,11 +91,11 @@ translator.pack()
 translator_var = tk.StringVar()
 translator_var.set("whisper")  # Standardauswahl
 
-pick_deepl = tk.Radiobutton(window, text="Deepl(API-Key benötigt)", variable=translator_var, value="deepl")
-pick_deepl.pack()
-
 pick_whisper = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
 pick_whisper.pack()
+
+pick_deepl = tk.Radiobutton(window, text="Deepl(API-Key benötigt)", variable=translator_var, value="deepl")
+pick_deepl.pack()
 
 # Erstelle Eingabefeld für API-Key
 api_key_label = tk.Label(window, text="API Key:")
