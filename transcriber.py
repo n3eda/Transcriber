@@ -122,6 +122,9 @@ size_small.pack()
 size_medium = tk.Radiobutton(window, text="medium (5GB VRAM)", variable=size_var, value="medium")
 size_medium.pack()
 
+size_medium = tk.Radiobutton(window, text="large (10GB VRAM)", variable=size_var, value="large")
+size_medium.pack()
+
 # Erstelle Textfeld für die Ausgabe
 output_text = tk.Text(window, height=20)
 output_text.pack()
