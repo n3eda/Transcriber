@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 
+import re
+import shutil
 import requests
 import whisper
 import os
@@ -9,12 +12,18 @@ import deepl
 def download_file(url):
     #Herunterladen des Videos
     response = requests.get(url)
-    with open("file.mp4", "wb") as f:
+    with open("file", "wb") as f:
         f.write(response.content)
-    
 
+def select_file():
+    #Öffnen des Filepickers
+    filetypes = (('All files', '*.*'),('Videofile', '*.mp4'))
+    filename = filedialog.askopenfilename(title='Open a file', initialdir='/', filetypes=filetypes)
+    url_filename_entry.insert(tk.END, filename)
+
+    
 def process():
-    url = url_entry.get()
+    url = url_filename_entry.get()
     api_key = api_key_entry.get()
     size = size_var.get()
     translator = translator_var.get()
@@ -24,18 +33,27 @@ def process():
     output_text.delete("1.0", tk.END)
     output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
-    #Download der Datei
-    download_file(url)
+    #Prüfen ob Text aus Eingabefeld eine gültige URL bzw. Dateipfad ist
+    if re.match(r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url):
+        #Download der Datei
+        download_file(url)
+
+    # Überprüfe, ob der Text ein Dateipfad ist
+    elif os.path.exists(url):
+        shutil.copyfile(url, 'file')
+
+    else:
+        return
 
 
     if translator == "whisper":
         if url == "":
-            messagebox.showerror("Error", "Please enter a valid URL")
+            messagebox.showerror("Error", "Please enter a valid URL/Filename")
             return
 
         # Erstellen des Transkribers
         model = whisper.load_model(size)
-        result = model.transcribe('file.mp4',task='translate')
+        result = model.transcribe('file',task='translate')
 
         # Ausgabe der Transkription
         for segment in result["segments"]:
@@ -53,7 +71,7 @@ def process():
 
         # Erstellen des Transkribers
         model = whisper.load_model(size)
-        result = model.transcribe('file.mp4')
+        result = model.transcribe('file')
 
         translator = deepl.Translator(api_key)
 
@@ -68,7 +86,7 @@ def process():
 
 
     #Tempfile löschen
-    os.remove("./file.mp4")
+    os.remove("./file")
 
     messagebox.showinfo("Success", "Data processed successfully.")
 
@@ -78,10 +96,14 @@ window.title("Pr0-Videoübersetzer")
 window.geometry("400x600")
 
 # Erstelle Eingabefeld für URL
-url_label = tk.Label(window, text="URL:")
-url_label.pack()
-url_entry = tk.Entry(window,width=40)
-url_entry.pack()
+url_file_label = tk.Label(window, text="URL/File:")
+url_file_label.pack()
+url_filename_entry = tk.Entry(window,width=40)
+url_filename_entry.pack()
+
+# Erstelle Button um Datei auszuwählen
+filename = tk.Button(window, text="Datei auswählen", command=select_file)
+filename.pack()
 
 
 # Erstelle Radiobuttons für Auswahl des Übersetzers
