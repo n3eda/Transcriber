@@ -27,6 +27,7 @@ def process():
     api_key = api_key_entry.get()
     size = size_var.get()
     translator = translator_var.get()
+    whisper_translate = whisper_translate_checkbuttonvar.get()
 
     #Ausgabefeld leeren
     output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
@@ -53,7 +54,13 @@ def process():
 
         # Erstellen des Transkribers
         model = whisper.load_model(size)
-        result = model.transcribe('file',task='translate')
+
+        #Prüfen ob Originalsprache beibehalten werden soll
+        if whisper_translate == False:
+            result = model.transcribe('file',task='translate')
+        else:
+            result = model.transcribe('file')
+
 
         # Ausgabe der Transkription
         for segment in result["segments"]:
@@ -115,6 +122,11 @@ translator_var.set("whisper")  # Standardauswahl
 
 pick_whisper = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
 pick_whisper.pack()
+
+
+whisper_translate_checkbuttonvar = tk.IntVar()
+whisper_translate_checkbutton = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
+whisper_translate_checkbutton.pack()
 
 pick_deepl = tk.Radiobutton(window, text="Deepl(API-Key benötigt)", variable=translator_var, value="deepl")
 pick_deepl.pack()
