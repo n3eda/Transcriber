@@ -141,6 +141,7 @@ size_label = tk.Label(window, text="Modellgröße wählen:")
 size_label.grid(sticky="W", column=0, row=6)
 
 select_model_size_combobox = ttk.Combobox(values=["tiny","base","small","medium","large"])
+select_model_size_combobox.set("base")
 #select_model_size_combobox = ttk.Combobox(values=["tiny (1GB VRAM)","base (1GB VRAM)","small (2GB VRAM)","medium (5GB VRAM)","large (10GB VRAM)"])
 select_model_size_combobox.grid(sticky="W",column=1, row=6)
 
