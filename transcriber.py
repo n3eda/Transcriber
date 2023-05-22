@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import ttk
 
 import re
 import shutil
@@ -25,7 +26,7 @@ def select_file():
 def process():
     url = url_filename_entry.get()
     api_key = api_key_entry.get()
-    size = size_var.get()
+    size = select_model_size_combobox.get()
     translator = translator_var.get()
     whisper_translate = whisper_translate_checkbuttonvar.get()
 
@@ -100,77 +101,67 @@ def process():
 # Erstelle das Hauptfenster
 window = tk.Tk()
 window.title("Pr0-Videoübersetzer")
-window.geometry("400x750")
+window.geometry("650x450")
 
 # Erstelle Eingabefeld für URL
 url_file_label = tk.Label(window, text="URL/File:")
-url_file_label.pack()
+url_file_label.grid(column=0, row=0)
 url_filename_entry = tk.Entry(window,width=40)
-url_filename_entry.pack()
+url_filename_entry.grid(column=0, row=1)
 
 # Erstelle Button um Datei auszuwählen
 filename = tk.Button(window, text="Datei auswählen", command=select_file)
-filename.pack()
+filename.grid(column=1, row=1)
 
 
 # Erstelle Radiobuttons für Auswahl des Übersetzers
 translator = tk.Label(window, text="Übersetzer wählen:")
-translator.pack()
+translator.grid(column=0, row=3)
 
 translator_var = tk.StringVar()
 translator_var.set("whisper")  # Standardauswahl
 
 pick_whisper = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
-pick_whisper.pack()
-
+pick_whisper.grid(sticky="W",column=0, row=4)
 
 whisper_translate_checkbuttonvar = tk.IntVar()
 whisper_translate_checkbutton = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
-whisper_translate_checkbutton.pack()
+whisper_translate_checkbutton.grid(column=1, row=4)
 
 pick_deepl = tk.Radiobutton(window, text="Deepl(API-Key benötigt)", variable=translator_var, value="deepl")
-pick_deepl.pack()
+pick_deepl.grid(sticky="W", column=0, row=5)
 
 # Erstelle Eingabefeld für API-Key
-api_key_label = tk.Label(window, text="API Key:")
-api_key_label.pack()
 api_key_entry = tk.Entry(window,width=25)
-api_key_entry.pack()
+api_key_entry.insert(-1, "API-Key")
+api_key_entry.grid(sticky="W", column=1, row=5)
 
-# Erstelle Radiobuttons für Größenauswahl
+# Erstelle Label und Combobox für Auswahl Modellgröße Whisper
 size_label = tk.Label(window, text="Modellgröße wählen:")
-size_label.pack()
+size_label.grid(sticky="W", column=0, row=6)
 
-size_var = tk.StringVar()
-size_var.set("base")  # Standardauswahl
-
-size_tiny = tk.Radiobutton(window, text="tiny (1GB VRAM)", variable=size_var, value="tiny")
-size_tiny.pack()
-
-size_base = tk.Radiobutton(window, text="base (1GB VRAM)", variable=size_var, value="base")
-size_base.pack()
-
-size_small = tk.Radiobutton(window, text="small (2GB VRAM)", variable=size_var, value="small")
-size_small.pack()
-
-size_medium = tk.Radiobutton(window, text="medium (5GB VRAM)", variable=size_var, value="medium")
-size_medium.pack()
-
-size_medium = tk.Radiobutton(window, text="large (10GB VRAM)", variable=size_var, value="large")
-size_medium.pack()
+select_model_size_combobox = ttk.Combobox(values=["tiny","base","small","medium","large"])
+#select_model_size_combobox = ttk.Combobox(values=["tiny (1GB VRAM)","base (1GB VRAM)","small (2GB VRAM)","medium (5GB VRAM)","large (10GB VRAM)"])
+select_model_size_combobox.grid(sticky="W",column=1, row=6)
 
 # Erstelle Textfeld für die Ausgabe
-output_text = tk.Text(window, height=20)
-output_text.pack()
+output_text_label = tk.Label(window, text="Ausgabe")
+output_text_label.grid(sticky="W", column=0, row=7)
+
+output_text = tk.Text(window)
+output_text.grid(column=0, row=8, columnspan=3, rowspan=2)
 output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+
+scrollbar_output_text = ttk.Scrollbar(window, orient='vertical', command=output_text.yview)
+scrollbar_output_text.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
 
 # Erstelle Button zum Verarbeiten der Daten
 process_button = tk.Button(window, text="Process", command=process)
-process_button.pack()
+process_button.grid(sticky="E", column=0, row=12)
 
 # Erstelle Button zum Beenden
 quit_button = tk.Button(window, text="Exit", command=window.destroy)
-quit_button.pack()
+quit_button.grid(sticky="W",column=1, row=12)
 
 # Starte die Hauptereignisschleife
 window.mainloop()
