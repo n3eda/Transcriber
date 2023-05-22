@@ -101,7 +101,7 @@ def process():
 # Erstelle das Hauptfenster
 window = tk.Tk()
 window.title("Pr0-Videoübersetzer")
-window.geometry("650x450")
+window.geometry("680x600")
 
 # Erstelle Eingabefeld für URL
 url_file_label = tk.Label(window, text="URL/File:")
@@ -128,7 +128,7 @@ whisper_translate_checkbuttonvar = tk.IntVar()
 whisper_translate_checkbutton = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
 whisper_translate_checkbutton.grid(column=1, row=4)
 
-pick_deepl = tk.Radiobutton(window, text="Deepl(API-Key benötigt)", variable=translator_var, value="deepl")
+pick_deepl = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
 pick_deepl.grid(sticky="W", column=0, row=5)
 
 # Erstelle Eingabefeld für API-Key
