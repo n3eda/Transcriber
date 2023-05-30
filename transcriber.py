@@ -24,7 +24,7 @@ def select_file():
 
     
 def process():
-    url = url_filename_entry.get()
+    url_path = url_filename_entry.get()
     api_key = api_key_entry.get()
     size = select_model_size_combobox.get()
     translator = translator_var.get()
@@ -36,21 +36,21 @@ def process():
     output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
     #Prüfen ob Text aus Eingabefeld eine gültige URL bzw. Dateipfad ist
-    if re.match(r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url):
+    if re.match(r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url_path):
         #Download der Datei
-        download_file(url)
+        download_file(url_path)
 
     # Überprüfe, ob der Text ein Dateipfad ist
-    elif os.path.exists(url):
-        shutil.copyfile(url, 'file')
+    elif os.path.exists(url_path):
+        shutil.copyfile(url_path, 'file')
 
     else:
         return
 
 
     if translator == "whisper":
-        if url == "":
-            messagebox.showerror("Error", "Please enter a valid URL/Filename")
+        if url_path == "":
+            messagebox.showerror("Error", "Bitte gültige(n) URL/Dateipfad eingeben")
             return
 
         try:
@@ -80,7 +80,7 @@ def process():
         
     if translator == "deepl":
 
-        if url == "" or api_key == "":
+        if url_path == "" or api_key == "":
             messagebox.showerror("Error", "Please enter a URL and API key.")
             return
 
