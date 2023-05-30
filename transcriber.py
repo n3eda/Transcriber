@@ -53,14 +53,21 @@ def process():
             messagebox.showerror("Error", "Please enter a valid URL/Filename")
             return
 
-        # Erstellen des Transkribers
-        model = whisper.load_model(size)
+        try:
+            # Erstellen des Transkribers
+            model = whisper.load_model(size)
 
-        #Prüfen ob Originalsprache beibehalten werden soll
-        if whisper_translate == False:
-            result = model.transcribe('file',task='translate')
-        else:
-            result = model.transcribe('file')
+            #Prüfen ob Originalsprache beibehalten werden soll
+            if whisper_translate == False:
+                result = model.transcribe('file',task='translate')
+            else:
+                result = model.transcribe('file')
+
+        except RuntimeError as e:
+            if "CUDNN_STATUS_NOT_INITIALIZED" in str(e):
+                messagebox.showinfo("Fehler", "Nicht genügend VRAM. Kleineres Modell wählen")
+            else:
+                messagebox.showinfo("Fehler","Ein Fehler ist aufgetreten:", str(e))
 
 
         # Ausgabe der Transkription
