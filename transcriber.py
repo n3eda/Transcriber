@@ -20,20 +20,20 @@ def select_file():
     #Öffnen des Filepickers
     filetypes = (('All files', '*.*'),('Videofile', '*.mp4 *.avi *.mkv *.mov *.wmv *.webm *.flv'),('Audiofile', '*.mp3 *.wav *.flac *.aac *.ogg *.wma'))
     filename = filedialog.askopenfilename(title='Open a file', initialdir='/', filetypes=filetypes)
-    url_filename_entry.insert(tk.END, filename)
+    url_filename_entryfield.insert(tk.END, filename)
 
     
 def process():
-    url_path = url_filename_entry.get()
-    api_key = api_key_entry.get()
+    url_path = url_filename_entryfield.get()
+    api_key = api_key_entryfield.get()
     size = select_model_size_combobox.get()
     translator = translator_var.get()
     whisper_translate = whisper_translate_checkbuttonvar.get()
 
     #Ausgabefeld leeren
-    output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
-    output_text.delete("1.0", tk.END)
-    output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+    output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+    output_textbox.delete("1.0", tk.END)
+    output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
     #Prüfen ob Text aus Eingabefeld eine gültige URL bzw. Dateipfad ist
     if re.match(r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url_path):
@@ -74,9 +74,9 @@ def process():
         for segment in result["segments"]:
             line = "[%s --> %s]%s" % (round(segment["start"],2),round(segment["end"],2), segment["text"])
 
-            output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
-            output_text.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
-            output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+            output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+            output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
+            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
         
     if translator == "deepl":
 
@@ -95,9 +95,9 @@ def process():
             translated = translator.translate_text(segment["text"], target_lang="DE")
             line = "[%s --> %s]%s" % (segment["start"],segment["end"], translated)
 
-            output_text.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
-            output_text.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
-            output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+            output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+            output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
+            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
 
     #Tempfile löschen
@@ -112,30 +112,30 @@ window.geometry("680x600")
 
 # Erstelle Eingabefeld für URL
 url_file_label = tk.Label(window, text="URL/File:")
-url_filename_entry = tk.Entry(window,width=40)
+url_filename_entryfield = tk.Entry(window,width=40)
 
 # Erstelle Button um Datei auszuwählen
-filename = tk.Button(window, text="Datei auswählen", command=select_file)
+filepicker_button = tk.Button(window, text="Datei auswählen", command=select_file)
 
 # Erstelle Radiobuttons für Auswahl des Übersetzers
-translator = tk.Label(window, text="Übersetzer wählen:")
+translatorname_label = tk.Label(window, text="Übersetzer wählen:")
 
 translator_var = tk.StringVar()
 translator_var.set("whisper")  # Standardauswahl
 
-pick_whisper = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
+whipser_radiobutton = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
 
 whisper_translate_checkbuttonvar = tk.IntVar()
-whisper_translate_checkbutton = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
+whisper_origin_language_checkbox = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
 
-pick_deepl = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
+deepl_radiobutton = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
 
 # Erstelle Eingabefeld für API-Key
-api_key_entry = tk.Entry(window,width=25)
-api_key_entry.insert(-1, "API-Key")
+api_key_entryfield = tk.Entry(window,width=25)
+api_key_entryfield.insert(-1, "API-Key")
 
 # Erstelle Label und Combobox für Auswahl Modellgröße Whisper
-size_label = tk.Label(window, text="Modellgröße wählen:")
+model_size_label = tk.Label(window, text="Modellgröße wählen:")
 
 select_model_size_combobox = ttk.Combobox(state="readonly", values=["tiny","base","small","medium","large"])
 select_model_size_combobox.set("base")
@@ -144,10 +144,10 @@ select_model_size_combobox.set("base")
 # Erstelle Textfeld für die Ausgabe
 output_text_label = tk.Label(window, text="Ausgabe")
 
-output_text = tk.Text(window)
-output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+output_textbox = tk.Text(window)
+output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
-scrollbar_output_text = ttk.Scrollbar(window, orient='vertical', command=output_text.yview)
+output_textbox_scrollbar = ttk.Scrollbar(window, orient='vertical', command=output_textbox.yview)
 
 # Erstelle Button zum Verarbeiten der Daten
 process_button = tk.Button(window, text="Process", command=process)
@@ -157,18 +157,18 @@ quit_button = tk.Button(window, text="Exit", command=window.destroy)
 
 #Anordnung der Elemente
 url_file_label.grid(column=0, row=0)
-url_filename_entry.grid(column=0, row=1)
-filename.grid(column=1, row=1)
-translator.grid(column=0, row=3)
-pick_whisper.grid(sticky="W",column=0, row=4)
-pick_deepl.grid(sticky="W", column=0, row=5)
-whisper_translate_checkbutton.grid(column=1, row=4)
-api_key_entry.grid(sticky="W", column=1, row=5)
-size_label.grid(sticky="W", column=0, row=6)
+url_filename_entryfield.grid(column=0, row=1)
+filepicker_button.grid(column=1, row=1)
+translatorname_label.grid(column=0, row=3)
+whipser_radiobutton.grid(sticky="W",column=0, row=4)
+deepl_radiobutton.grid(sticky="W", column=0, row=5)
+whisper_origin_language_checkbox.grid(column=1, row=4)
+api_key_entryfield.grid(sticky="W", column=1, row=5)
+model_size_label.grid(sticky="W", column=0, row=6)
 select_model_size_combobox.grid(sticky="W",column=1, row=6)
 output_text_label.grid(sticky="W", column=0, row=7)
-output_text.grid(column=0, row=8, columnspan=3, rowspan=2)
-scrollbar_output_text.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
+output_textbox.grid(column=0, row=8, columnspan=3, rowspan=2)
+output_textbox_scrollbar.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
 process_button.grid(sticky="E", column=0, row=12)
 quit_button.grid(sticky="W",column=1, row=12)
 
