@@ -112,63 +112,64 @@ window.geometry("680x600")
 
 # Erstelle Eingabefeld für URL
 url_file_label = tk.Label(window, text="URL/File:")
-url_file_label.grid(column=0, row=0)
 url_filename_entry = tk.Entry(window,width=40)
-url_filename_entry.grid(column=0, row=1)
 
 # Erstelle Button um Datei auszuwählen
 filename = tk.Button(window, text="Datei auswählen", command=select_file)
-filename.grid(column=1, row=1)
-
 
 # Erstelle Radiobuttons für Auswahl des Übersetzers
 translator = tk.Label(window, text="Übersetzer wählen:")
-translator.grid(column=0, row=3)
 
 translator_var = tk.StringVar()
 translator_var.set("whisper")  # Standardauswahl
 
 pick_whisper = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
-pick_whisper.grid(sticky="W",column=0, row=4)
 
 whisper_translate_checkbuttonvar = tk.IntVar()
 whisper_translate_checkbutton = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
-whisper_translate_checkbutton.grid(column=1, row=4)
 
 pick_deepl = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
-pick_deepl.grid(sticky="W", column=0, row=5)
 
 # Erstelle Eingabefeld für API-Key
 api_key_entry = tk.Entry(window,width=25)
 api_key_entry.insert(-1, "API-Key")
-api_key_entry.grid(sticky="W", column=1, row=5)
 
 # Erstelle Label und Combobox für Auswahl Modellgröße Whisper
 size_label = tk.Label(window, text="Modellgröße wählen:")
-size_label.grid(sticky="W", column=0, row=6)
 
 select_model_size_combobox = ttk.Combobox(state="readonly", values=["tiny","base","small","medium","large"])
 select_model_size_combobox.set("base")
 #select_model_size_combobox = ttk.Combobox(values=["tiny (1GB VRAM)","base (1GB VRAM)","small (2GB VRAM)","medium (5GB VRAM)","large (10GB VRAM)"])
-select_model_size_combobox.grid(sticky="W",column=1, row=6)
 
 # Erstelle Textfeld für die Ausgabe
 output_text_label = tk.Label(window, text="Ausgabe")
-output_text_label.grid(sticky="W", column=0, row=7)
 
 output_text = tk.Text(window)
-output_text.grid(column=0, row=8, columnspan=3, rowspan=2)
 output_text.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
 
 scrollbar_output_text = ttk.Scrollbar(window, orient='vertical', command=output_text.yview)
-scrollbar_output_text.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
 
 # Erstelle Button zum Verarbeiten der Daten
 process_button = tk.Button(window, text="Process", command=process)
-process_button.grid(sticky="E", column=0, row=12)
 
 # Erstelle Button zum Beenden
 quit_button = tk.Button(window, text="Exit", command=window.destroy)
+
+#Anordnung der Elemente
+url_file_label.grid(column=0, row=0)
+url_filename_entry.grid(column=0, row=1)
+filename.grid(column=1, row=1)
+translator.grid(column=0, row=3)
+pick_whisper.grid(sticky="W",column=0, row=4)
+pick_deepl.grid(sticky="W", column=0, row=5)
+whisper_translate_checkbutton.grid(column=1, row=4)
+api_key_entry.grid(sticky="W", column=1, row=5)
+size_label.grid(sticky="W", column=0, row=6)
+select_model_size_combobox.grid(sticky="W",column=1, row=6)
+output_text_label.grid(sticky="W", column=0, row=7)
+output_text.grid(column=0, row=8, columnspan=3, rowspan=2)
+scrollbar_output_text.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
+process_button.grid(sticky="E", column=0, row=12)
 quit_button.grid(sticky="W",column=1, row=12)
 
 # Starte die Hauptereignisschleife
