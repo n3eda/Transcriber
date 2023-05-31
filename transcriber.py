@@ -103,7 +103,7 @@ def process():
     #Tempfile löschen
     os.remove("./file")
 
-    messagebox.showinfo("Success", "Data processed successfully.")
+    messagebox.showinfo("Success", "Vorgang erfolgreich abgeschlossen")
 
 # Erstelle das Hauptfenster
 window = tk.Tk()
@@ -150,10 +150,10 @@ output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Tex
 output_textbox_scrollbar = ttk.Scrollbar(window, orient='vertical', command=output_textbox.yview)
 
 # Erstelle Button zum Verarbeiten der Daten
-process_button = tk.Button(window, text="Process", command=process)
+process_button = tk.Button(window, text="Start", command=process)
 
 # Erstelle Button zum Beenden
-quit_button = tk.Button(window, text="Exit", command=window.destroy)
+quit_button = tk.Button(window, text="Beenden", command=window.destroy)
 
 #Anordnung der Elemente
 url_file_label.grid(column=0, row=0)
