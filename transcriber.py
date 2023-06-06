@@ -18,7 +18,7 @@ def download_file(url):
 
 def select_file():
     #Öffnen des Filepickers
-    filetypes = (('All files', '*.*'),('Videofile', '*.mp4 *.avi *.mkv *.mov *.wmv *.webm *.flv'),('Audiofile', '*.mp3 *.wav *.flac *.aac *.ogg *.wma'))
+    filetypes = (('All files', '*.*'),('Videofile', '*.mp4 *.avi *.mkv *.mov *.wmv *.webm *.flv'),('Audiofile', '*.mp3 *.wav *.flac *.aac *.ogg *.wma *.m4a'))
     filename = filedialog.askopenfilename(title='Open a file', initialdir='/', filetypes=filetypes)
     url_filename_entryfield.insert(tk.END, filename)
 
