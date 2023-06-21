@@ -29,6 +29,7 @@ def process():
     size = select_model_size_combobox.get()
     translator = translator_var.get()
     whisper_translate = whisper_translate_checkbuttonvar.get()
+    transcript_speichern = transcript_speichern_checkvar.get()
 
     #Ausgabefeld leeren
     output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
@@ -76,7 +77,7 @@ def process():
 
             output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
             output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
-            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds               
         
     if translator == "deepl":
 
@@ -98,6 +99,10 @@ def process():
             output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
             output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
             output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
+
+    if transcript_speichern == True:
+        with open("./output.txt", "w") as file:
+            file.write(output_textbox.get("1.0","end-1c"))
 
 
     #Tempfile löschen
@@ -129,6 +134,10 @@ whisper_translate_checkbuttonvar = tk.IntVar()
 whisper_origin_language_checkbox = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
 
 deepl_radiobutton = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
+
+#Checkbox um Transcript zu speichern
+transcript_speichern_checkvar = tk.IntVar()
+transcript_speichern_checkbox = tk.Checkbutton(window, text="Transcript speichern", variable=transcript_speichern_checkvar)
 
 # Erstelle Eingabefeld für API-Key
 api_key_entryfield = tk.Entry(window,width=25)
@@ -166,9 +175,10 @@ whisper_origin_language_checkbox.grid(column=1, row=4)
 api_key_entryfield.grid(sticky="W", column=1, row=5)
 model_size_label.grid(sticky="W", column=0, row=6)
 select_model_size_combobox.grid(sticky="W",column=1, row=6)
-output_text_label.grid(sticky="W", column=0, row=7)
-output_textbox.grid(column=0, row=8, columnspan=3, rowspan=2)
-output_textbox_scrollbar.grid(column=3, row=8,rowspan=2, sticky=tk.NS)
+transcript_speichern_checkbox.grid(sticky="W", column=1, row=7)
+output_text_label.grid(sticky="W", column=0, row=8)
+output_textbox.grid(column=0, row=9, columnspan=3, rowspan=2)
+output_textbox_scrollbar.grid(column=3, row=9,rowspan=2, sticky=tk.NS)
 process_button.grid(sticky="E", column=0, row=12)
 quit_button.grid(sticky="W",column=1, row=12)
 
