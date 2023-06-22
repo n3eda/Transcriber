@@ -19,16 +19,18 @@ def download_file(url):
 def select_file():
     #Öffnen des Filepickers
     filetypes = (('All files', '*.*'),('Videofile', '*.mp4 *.avi *.mkv *.mov *.wmv *.webm *.flv'),('Audiofile', '*.mp3 *.wav *.flac *.aac *.ogg *.wma *.m4a'))
-    filename = filedialog.askopenfilename(title='Open a file', initialdir='/', filetypes=filetypes)
+    filename = filedialog.askopenfilename(title='Open a file', initialdir='./', filetypes=filetypes)
     url_filename_entryfield.insert(tk.END, filename)
 
+def select_folder():
+    filename = filedialog.askdirectory()
+    url_filename_entryfield.insert(tk.END, filename)
     
 def process():
     url_path = url_filename_entryfield.get()
     api_key = api_key_entryfield.get()
     size = select_model_size_combobox.get()
     translator = translator_var.get()
-    whisper_translate = whisper_translate_checkbuttonvar.get()
     transcript_speichern = transcript_speichern_checkvar.get()
 
     #Ausgabefeld leeren
@@ -40,75 +42,86 @@ def process():
     if re.match(r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', url_path):
         #Download der Datei
         download_file(url_path)
+        translate(translator, size, "file",transcript_speichern)
 
-    # Überprüfe, ob der Text ein Dateipfad ist
-    elif os.path.exists(url_path):
-        shutil.copyfile(url_path, 'file')
+        #Tempfile löschen
+        os.remove("./file")
+
+    # Wenn Datei/Ordner lokal
+    if os.path.isfile(url_path):
+        translate(translator, size, url_filename_entryfield.get(),transcript_speichern)
+    
+    elif os.path.isdir(url_path):
+        translate(translator, size, url_filename_entryfield.get(),transcript_speichern)
 
     else:
         return
 
-
-    if translator == "whisper":
-        if url_path == "":
-            messagebox.showerror("Error", "Bitte gültige(n) URL/Dateipfad eingeben")
-            return
-
-        try:
-            # Erstellen des Transkribers
-            model = whisper.load_model(size)
-
-            #Prüfen ob Originalsprache beibehalten werden soll
-            if whisper_translate == False:
-                result = model.transcribe('file',task='translate')
-            else:
-                result = model.transcribe('file')
-
-        except RuntimeError as e:
-            if "CUDNN_STATUS_NOT_INITIALIZED" in str(e):
-                messagebox.showinfo("Fehler", "Nicht genügend VRAM. Kleineres Modell wählen")
-            else:
-                messagebox.showinfo("Fehler","Ein Fehler ist aufgetreten:", str(e))
-
-
-        # Ausgabe der Transkription
-        for segment in result["segments"]:
-            line = "[%s --> %s]%s" % (round(segment["start"],2),round(segment["end"],2), segment["text"])
-
-            output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
-            output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
-            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds               
-        
-    if translator == "deepl":
-
-        if url_path == "" or api_key == "":
-            messagebox.showerror("Error", "Please enter a URL and API key.")
-            return
-
-        # Erstellen des Transkribers
-        model = whisper.load_model(size)
-        result = model.transcribe('file')
-
-        translator = deepl.Translator(api_key)
-
-        # Ausgabe der Transkription
-        for segment in result["segments"]:
-            translated = translator.translate_text(segment["text"], target_lang="DE")
-            line = "[%s --> %s]%s" % (segment["start"],segment["end"], translated)
-
-            output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
-            output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
-            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds
-
-    if transcript_speichern == True:
-        with open("./output.txt", "w") as file:
-            file.write(output_textbox.get("1.0","end-1c"))
-
-
-    #Tempfile löschen
-    os.remove("./file")
+    #if transcript_speichern == True:
+    #    with open("./output.txt", "w") as file:
+    #        file.write(output_textbox.get("1.0","end-1c"))
 
     messagebox.showinfo("Success", "Vorgang erfolgreich abgeschlossen")
+
+def translate(translator,size,url_path,transcript_speichern):
+    file_extensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.webm', '.flv','.mp3', '.wav', '.flac', '.aac', '.ogg', '.wma', '.m4a']
+    try:
+        # Erstellen des Transkribers
+        model = whisper.load_model(size)
+
+        # Unnötig komplizierte If-Schleifen
+        if translator == "whisper":
+            if os.path.isfile(url_path) == True:
+                if whisper_translate_checkbuttonvar.get() == False:
+                    result = model.transcribe(os.path.join(url_path), task="translate")
+                else:
+                    result = model.transcribe(os.path.join(url_path))
+                
+                # Ausgabe der Transkription
+                for segment in result["segments"]:
+                    line = "[%s --> %s]%s" % (round(segment["start"],2),round(segment["end"],2), segment["text"])
+
+                    if transcript_speichern == True:
+                        with open(url_path +".txt","a+") as datei:
+                            datei.write(line + '\n')
+
+                    output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+                    output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
+                    output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds      
+
+            elif os.path.isdir(url_path) == True:
+                for files in os.listdir(url_path):
+                    if files.lower().endswith(tuple(file_extensions)):
+                        output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+                        output_textbox.insert(tk.END, files + '\n')  # Schreibe den neuen Text in das Textfeld 
+                        output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds   
+
+                        if whisper_translate_checkbuttonvar.get() == False:
+                            result = model.transcribe(os.path.join(url_path,files), task="translate")
+
+                        elif whisper_translate_checkbuttonvar.get() == True:
+                            result = model.transcribe(os.path.join(url_path,files))
+
+                        #Ausgabe der Transkription
+                        for segment in result["segments"]:
+                            line = "[%s --> %s]%s" % (round(segment["start"],2),round(segment["end"],2), segment["text"])
+
+                            if transcript_speichern == True:
+                                with open(os.path.join(url_path,files) +".txt","a+") as datei:
+                                    datei.write(line + '\n')
+                                        
+                            output_textbox.configure(state="normal")  # Aktiviere das Bearbeiten des Textfelds
+                            output_textbox.insert(tk.END, line + '\n')  # Schreibe den neuen Text in das Textfeld
+                            output_textbox.configure(state="disabled")  # Deaktiviere das Bearbeiten des Textfelds  
+
+                                   
+
+    except RuntimeError as e:
+        if "CUDNN_STATUS_NOT_INITIALIZED" in str(e):
+            messagebox.showinfo("Fehler", "Nicht genügend VRAM. Kleineres Modell wählen")
+        else:
+            messagebox.showinfo("Fehler","Ein Fehler ist aufgetreten:", str(e))
+   
 
 # Erstelle das Hauptfenster
 window = tk.Tk()
@@ -122,6 +135,9 @@ url_filename_entryfield = tk.Entry(window,width=40)
 # Erstelle Button um Datei auszuwählen
 filepicker_button = tk.Button(window, text="Datei auswählen", command=select_file)
 
+# Erstelle Button um Ordner auszuwählen
+folderpicker_button =tk.Button(window,text="Ordner auswählen", command=select_folder)
+
 # Erstelle Radiobuttons für Auswahl des Übersetzers
 translatorname_label = tk.Label(window, text="Übersetzer wählen:")
 
@@ -130,7 +146,7 @@ translator_var.set("whisper")  # Standardauswahl
 
 whipser_radiobutton = tk.Radiobutton(window, text="Whisper (kein API-Key benötigt)", variable=translator_var, value="whisper")
 
-whisper_translate_checkbuttonvar = tk.IntVar()
+whisper_translate_checkbuttonvar = tk.BooleanVar()
 whisper_origin_language_checkbox = tk.Checkbutton(window, text="Whisper: Originalsprache beibehalten", variable=whisper_translate_checkbuttonvar)
 
 deepl_radiobutton = tk.Radiobutton(window, text="Deepl (API-Key benötigt)", variable=translator_var, value="deepl")
@@ -168,17 +184,18 @@ quit_button = tk.Button(window, text="Beenden", command=window.destroy)
 url_file_label.grid(column=0, row=0)
 url_filename_entryfield.grid(column=0, row=1)
 filepicker_button.grid(column=1, row=1)
+folderpicker_button.grid(sticky="W", column=2, row=1)
 translatorname_label.grid(column=0, row=3)
 whipser_radiobutton.grid(sticky="W",column=0, row=4)
-deepl_radiobutton.grid(sticky="W", column=0, row=5)
+#deepl_radiobutton.grid(sticky="W", column=0, row=5)
 whisper_origin_language_checkbox.grid(column=1, row=4)
-api_key_entryfield.grid(sticky="W", column=1, row=5)
+#api_key_entryfield.grid(sticky="W", column=1, row=5)
 model_size_label.grid(sticky="W", column=0, row=6)
 select_model_size_combobox.grid(sticky="W",column=1, row=6)
 transcript_speichern_checkbox.grid(sticky="W", column=1, row=7)
 output_text_label.grid(sticky="W", column=0, row=8)
-output_textbox.grid(column=0, row=9, columnspan=3, rowspan=2)
-output_textbox_scrollbar.grid(column=3, row=9,rowspan=2, sticky=tk.NS)
+output_textbox.grid(sticky="W",column=0, row=9, columnspan=3, rowspan=2)
+output_textbox_scrollbar.grid(column=2, row=9,rowspan=2, sticky=tk.NS)
 process_button.grid(sticky="E", column=0, row=12)
 quit_button.grid(sticky="W",column=1, row=12)
 
