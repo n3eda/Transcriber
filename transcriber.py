@@ -146,7 +146,7 @@ api_key_entryfield.insert(-1, "API-Key")
 # Erstelle Label und Combobox für Auswahl Modellgröße Whisper
 model_size_label = tk.Label(window, text="Modellgröße wählen:")
 
-select_model_size_combobox = ttk.Combobox(state="readonly", values=["tiny","base","small","medium","large"])
+select_model_size_combobox = ttk.Combobox(state="readonly", values=["tiny","base","small","medium","large-v3"])
 select_model_size_combobox.set("base")
 #select_model_size_combobox = ttk.Combobox(values=["tiny (1GB VRAM)","base (1GB VRAM)","small (2GB VRAM)","medium (5GB VRAM)","large (10GB VRAM)"])
 
